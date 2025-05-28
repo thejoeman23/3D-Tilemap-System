@@ -12,4 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebe7dee93b9eeb548abaa521762680e5, type: 3}
   m_Name: TestPalette
   m_EditorClassIdentifier: 
-  tiles: []
+  tiles:
+  - label: Shpere 1
+    prefab: {fileID: 9105661252049634828, guid: 1c99bdbc99e1b374eb581cb6d2ba4427, type: 3}
+    type: 4
+  - label: Shpere 1
+    prefab: {fileID: 9105661252049634828, guid: 1c99bdbc99e1b374eb581cb6d2ba4427, type: 3}
+    type: 4
+  - label: Shpere 1
+    prefab: {fileID: 9105661252049634828, guid: 1c99bdbc99e1b374eb581cb6d2ba4427, type: 3}
+    type: 4
+  - label: Shpere 1
+    prefab: {fileID: 9105661252049634828, guid: 1c99bdbc99e1b374eb581cb6d2ba4427, type: 3}
+    type: 4
