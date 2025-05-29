@@ -13,8 +13,6 @@ public class TilemapEditorWindow : EditorWindow
         //Show existing window instance. If one doesn't exist, make one.
         EditorWindow.GetWindow(typeof(TilemapEditorWindow));
     }
-    
-    GameObject selectedPrefab; // Store selected prefab globally in the window
 
     void OnGUI()
     {
@@ -41,14 +39,14 @@ public class TilemapEditorWindow : EditorWindow
             Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab);
 
             GUIStyle style = new GUIStyle(GUI.skin.button);
-            if (selectedPrefab == entry.prefab)
+            if (TilemapContext.currentSelectedTile == entry.prefab)
             {
                 style.normal.background = Texture2D.grayTexture;
             }
 
             if (GUILayout.Button(preview, style, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
             {
-                selectedPrefab = entry.prefab;
+                TilemapContext.currentSelectedTile = entry.prefab;
             }
 
             col++;
@@ -66,4 +64,13 @@ public class TilemapEditorWindow : EditorWindow
 
         EditorGUILayout.EndScrollView();
     }
+}
+
+public static class TilemapContext
+{
+    public static GameObject currentSelectedTile;
+    public static Tilemap3D currentTilemap;
+    public static Vector3Int tileSize;
+    public static int yValue;
+    public static Vector2Int gridSize;
 }
