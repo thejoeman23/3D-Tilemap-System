@@ -1,6 +1,6 @@
+using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 [ExecuteAlways]
 public class Tilemap3D : MonoBehaviour
@@ -18,16 +18,23 @@ public class Tilemap3D : MonoBehaviour
     private void OnSceneGUI(SceneView sceneView)
     {
         if (Selection.activeGameObject != gameObject) return;
-        
-        Handles.color = Color.cyan;
 
         int gridxSize = TilemapContext.gridSize.x;
         int gridzSize = TilemapContext.gridSize.y;
+        float r = Mathf.Pow(Mathf.Max(gridxSize, gridzSize), 2);
 
         for (int x = -gridxSize; x <= gridxSize; x++)
         {
             for (int z = -gridzSize; z <= gridzSize; z++)
             {
+                float xz = (x*x) + (z*z);
+                float alpha = Mathf.Clamp01(1f - (xz / r));
+                
+                Color color = Color.cyan;
+                color.a = alpha;
+
+                Handles.color = color;
+                
                 Vector3 pos = new Vector3(x * TilemapContext.tileSize.x, TilemapContext.yValue, z * TilemapContext.tileSize.x);
                 Handles.DrawWireCube(pos, new Vector3(TilemapContext.tileSize.x, TilemapContext.yValue, TilemapContext.tileSize.x));
             }
