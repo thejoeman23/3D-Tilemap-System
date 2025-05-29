@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+[ExecuteAlways]
 public class Tilemap3D : MonoBehaviour
 {
     void OnEnable()

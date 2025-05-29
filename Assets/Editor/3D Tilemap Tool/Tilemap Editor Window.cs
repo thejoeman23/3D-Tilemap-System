@@ -20,6 +20,16 @@ public class TilemapEditorWindow : EditorWindow
 
         if (tilePalette == null || tilePalette.tiles == null) return;
 
+        if (TilemapContext.tilemap == null)
+        {
+            if (GUILayout.Button("Create Grid"))
+            {
+                GameObject grid = new GameObject("Grid3D");
+                grid.AddComponent<Tilemap3D>();
+                TilemapContext.tilemap = grid.GetComponent<Tilemap3D>();
+            }
+        }
+
         float tileSize = 80f;
         float padding = 10f;
         float totalTileSize = tileSize + padding;
@@ -64,13 +74,4 @@ public class TilemapEditorWindow : EditorWindow
 
         EditorGUILayout.EndScrollView();
     }
-}
-
-public static class TilemapContext
-{
-    public static GameObject currentSelectedTile;
-    public static Tilemap3D currentTilemap;
-    public static Vector3Int tileSize;
-    public static int yValue;
-    public static Vector2Int gridSize;
 }
