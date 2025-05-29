@@ -17,7 +17,9 @@ public class Tilemap3D : MonoBehaviour
     
     private void OnSceneGUI(SceneView sceneView)
     {
-        Handles.color = Color.gray;
+        if (Selection.activeGameObject != gameObject) return;
+        
+        Handles.color = Color.cyan;
 
         int gridxSize = TilemapContext.gridSize.x;
         int gridzSize = TilemapContext.gridSize.y;

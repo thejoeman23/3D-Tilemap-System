@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.Tilemaps;
+using Object = System.Object;
 
 public class TilemapEditorWindow : EditorWindow
 {
@@ -16,10 +18,9 @@ public class TilemapEditorWindow : EditorWindow
 
     void OnGUI()
     {
-        tilePalette = (TilePalette)EditorGUILayout.ObjectField("Tile Palette", tilePalette, typeof(TilePalette), true);
-
-        if (tilePalette == null || tilePalette.tiles == null) return;
-
+        Tilemap3D existingGrid = GameObject.FindObjectOfType<Tilemap3D>();
+        if (existingGrid != null) TilemapContext.tilemap = existingGrid;
+        
         if (TilemapContext.tilemap == null)
         {
             if (GUILayout.Button("Create Grid"))
@@ -29,6 +30,10 @@ public class TilemapEditorWindow : EditorWindow
                 TilemapContext.tilemap = grid.GetComponent<Tilemap3D>();
             }
         }
+        
+        tilePalette = (TilePalette)EditorGUILayout.ObjectField("Tile Palette", tilePalette, typeof(TilePalette), true);
+
+        if (tilePalette == null || tilePalette.tiles == null) return;
 
         float tileSize = 80f;
         float padding = 10f;
@@ -73,5 +78,14 @@ public class TilemapEditorWindow : EditorWindow
             EditorGUILayout.EndHorizontal(); // End last row if incomplete
 
         EditorGUILayout.EndScrollView();
+        
+        EditorGUILayout.BeginVertical();
+        
+        TilemapContext.tileSize = EditorGUILayout.Vector3IntField(
+            new GUIContent("Tile Size"),
+            TilemapContext.tileSize
+        );
+        
+        EditorGUILayout.EndVertical();
     }
 }
