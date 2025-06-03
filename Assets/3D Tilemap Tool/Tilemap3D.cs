@@ -17,15 +17,17 @@ public class Tilemap3D : MonoBehaviour
     
     private void OnSceneGUI(SceneView sceneView)
     {
-        if (Selection.activeGameObject != gameObject) return;
+        // if (Selection.activeGameObject != gameObject) return;
 
         int gridxSize = TilemapContext.gridSize.x;
         int gridzSize = TilemapContext.gridSize.y;
         float r = Mathf.Pow(Mathf.Max(gridxSize, gridzSize), 2);
 
-        for (int x = -gridxSize; x <= gridxSize; x++)
+        Vector3Int mousePos = TilemapContext.mouseHoverPos;
+
+        for (int x = mousePos.x-gridxSize; x <= mousePos.x+gridxSize; x++)
         {
-            for (int z = -gridzSize; z <= gridzSize; z++)
+            for (int z = mousePos.z-gridzSize; z <= mousePos.z+gridzSize; z++)
             {
                 float xz = (x*x) + (z*z);
                 float alpha = Mathf.Clamp01(1f - (xz / r));

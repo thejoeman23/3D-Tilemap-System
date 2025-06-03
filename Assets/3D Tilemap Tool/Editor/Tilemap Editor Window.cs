@@ -35,6 +35,19 @@ public class TilemapEditorWindow : EditorWindow
 
         if (tilePalette == null || tilePalette.tiles == null) return;
 
+        Texture2D icon = TilemapIcons.PaintbrushIcon;
+
+        GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+        if (TilemapContext.currentSelectedTile == entry.prefab)
+        {
+            style.normal.background = Texture2D.grayTexture;
+        }
+
+        if (GUILayout.Button(preview, icon, GUILayout.Width(50), GUILayout.Height(50)))
+        {
+            TilemapContext.currentSelectedTile = entry.prefab;
+        }
+
         float tileSize = 80f;
         float padding = 10f;
         float totalTileSize = tileSize + padding;
