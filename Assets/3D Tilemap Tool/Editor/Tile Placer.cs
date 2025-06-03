@@ -1,42 +1,51 @@
 using UnityEditor;
 using UnityEngine;
 
-[ExecuteAlways]
-public class TilePlacer : MonoBehaviour
+[InitializeOnLoad]
+public static class TilePlacer
 {
-    private void Update()
+    static TilePlacer()
     {
-        SceneView sceneView = SceneView.lastActiveSceneView;
-        if (!sceneView) return;
-
-        Camera cam = sceneView.camera;
-        Vector3 camPosition = cam.transform.position;
-
-        // Get mouse position in scene view (from GUI space to world)
-        Vector2 mousePosition = Event.current != null ? Event.current.mousePosition : Vector2.zero;
-        mousePosition.y = sceneView.position.height - mousePosition.y;
-
-        // Get world position under the mouse (just a point on the near clip plane)
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, cam.nearClipPlane));
-
-        // Draw a line from camera to mouseWorld, and extend it to y = TilemapContext.yValue
-        Vector3 intersection = FindPointAtY(camPosition, mouseWorld, TilemapContext.yValue);
-
-        // Snap to grid
-        int roundedX = Mathf.RoundToInt(intersection.x);
-        int roundedZ = Mathf.RoundToInt(intersection.z);
-        int roundedY = Mathf.RoundToInt(TilemapContext.yValue);
-        TilemapContext.mouseHoverPos = new Vector3Int(roundedX, roundedY, roundedZ);
+        SceneView.duringSceneGui += OnSceneGUI;
     }
 
-    Vector3 FindPointAtY(Vector3 start, Vector3 end, float targetY)
+    private static void OnSceneGUI(SceneView sceneView)
+    {
+        if (TilemapContext.selectedTool == SelectedTool.None) return;
+        
+        Event e = Event.current;
+        if (e == null) return;
+
+        Camera cam = sceneView.camera;
+        if (!cam) return;
+
+        Vector2 mousePosition = e.mousePosition;
+        mousePosition.y = sceneView.camera.pixelHeight - mousePosition.y;
+
+        Ray ray = cam.ScreenPointToRay(mousePosition);
+        float targetY = TilemapContext.yValue;
+
+        Vector3 intersection = FindPointAtY(ray.origin, ray.origin + ray.direction * 1000f, targetY);
+
+        int roundedX = Mathf.RoundToInt(intersection.x / TilemapContext.tileSize.x);
+        int roundedZ = Mathf.RoundToInt(intersection.z / TilemapContext.tileSize.x);
+        int roundedY = Mathf.RoundToInt(targetY);
+
+        TilemapContext.mouseHoverPos = new Vector3Int(roundedX, roundedY, roundedZ);
+        HandleUtility.Repaint(); // force redraw
+        
+        // Handle left-click
+        if (e.type == EventType.MouseDown && e.button == 0 && !e.alt)
+        {
+            Tilemap3D.Instance.PlaceTile(TilemapContext.mouseHoverPos); // Assumes static reference to tilemap
+            e.Use(); // Consume event so Unity doesn't handle it
+        }
+    }
+
+    private static Vector3 FindPointAtY(Vector3 start, Vector3 end, float targetY)
     {
         Vector3 direction = end - start;
-        if (Mathf.Approximately(direction.y, 0f))
-        {
-            Debug.LogWarning("Direction is parallel to plane.");
-            return Vector3.zero;
-        }
+        if (Mathf.Approximately(direction.y, 0f)) return Vector3.zero;
 
         float t = (targetY - start.y) / direction.y;
         return start + direction * t;

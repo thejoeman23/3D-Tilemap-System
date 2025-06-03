@@ -6,8 +6,11 @@ using UnityEngine.InputSystem;
 [ExecuteAlways]
 public class Tilemap3D : MonoBehaviour
 {
+    public static Tilemap3D Instance { get; private set; }
+    
     void OnEnable()
     {
+        Instance = this;
         SceneView.duringSceneGui += OnSceneGUI;
     }
 
@@ -18,7 +21,8 @@ public class Tilemap3D : MonoBehaviour
     
     private void OnSceneGUI(SceneView sceneView)
     {
-        // if (Selection.activeGameObject != gameObject) return;
+        if (EditorWindow.mouseOverWindow is not SceneView)
+            return;
         
         int gridxSize = TilemapContext.gridSize.x;
         int gridzSize = TilemapContext.gridSize.y;
@@ -30,7 +34,10 @@ public class Tilemap3D : MonoBehaviour
         {
             for (int z = mousePos.z-gridzSize; z <= mousePos.z+gridzSize; z++)
             {
-                float xz = (x*x) + (z*z);
+                float dx = x - mousePos.x;
+                float dz = z - mousePos.z;
+                float xz = (dx * dx) + (dz * dz);
+
                 float alpha = Mathf.Clamp01(1f - (xz / r));
                 
                 Color color = Color.cyan;
@@ -49,6 +56,6 @@ public class Tilemap3D : MonoBehaviour
 
     public void PlaceTile(Vector3 position)
     {
-        // place Tile
+        Instantiate(TilemapContext.currentSelectedTile, position, Quaternion.identity);
     }
 }
