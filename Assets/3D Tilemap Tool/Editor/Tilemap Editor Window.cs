@@ -35,18 +35,7 @@ public class TilemapEditorWindow : EditorWindow
 
         if (tilePalette == null || tilePalette.tiles == null) return;
 
-        Texture2D icon = TilemapIcons.PaintbrushIcon;
-
-        GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
-        if (TilemapContext.currentSelectedTile == entry.prefab)
-        {
-            style.normal.background = Texture2D.grayTexture;
-        }
-
-        if (GUILayout.Button(preview, icon, GUILayout.Width(50), GUILayout.Height(50)))
-        {
-            TilemapContext.currentSelectedTile = entry.prefab;
-        }
+        DrawButtons();
 
         float tileSize = 80f;
         float padding = 10f;
@@ -100,5 +89,36 @@ public class TilemapEditorWindow : EditorWindow
         );
         
         EditorGUILayout.EndVertical();
+    }
+
+    void DrawButtons()
+    {
+        EditorGUILayout.BeginHorizontal();
+        
+        Texture2D icon = TilemapIcons.PaintbrushIcon;
+
+        GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+        buttonStyle.normal.background = Texture2D.grayTexture;
+
+        if (GUILayout.Button(icon, buttonStyle, GUILayout.Width(50), GUILayout.Height(50)))
+        {
+            TilemapContext.selectedTool = SelectedTool.Paint;
+        }
+
+        icon = TilemapIcons.EraserIcon;
+        
+        if (GUILayout.Button(icon, buttonStyle, GUILayout.Width(50), GUILayout.Height(50)))
+        {
+            TilemapContext.selectedTool = SelectedTool.Paint;
+        }
+
+        icon = TilemapIcons.BoxFillIcon;
+        
+        if (GUILayout.Button(icon, buttonStyle, GUILayout.Width(50), GUILayout.Height(50)))
+        {
+            TilemapContext.selectedTool = SelectedTool.Paint;
+        }
+        
+        EditorGUILayout.EndHorizontal();
     }
 }
