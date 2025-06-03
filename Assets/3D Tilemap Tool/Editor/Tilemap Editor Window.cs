@@ -7,6 +7,8 @@ using Object = System.Object;
 public class TilemapEditorWindow : EditorWindow
 {
     [SerializeField] TilePalette tilePalette;
+    GUIStyle backgroundStyle;
+    GUIStyle defaultBackgroundStyle;
     Vector2 scrollPosition;
     
     [MenuItem ("Jobs/3D Tilemap Tool")]
@@ -18,6 +20,8 @@ public class TilemapEditorWindow : EditorWindow
 
     void OnGUI()
     {
+        SetupStyles();
+        
         Tilemap3D existingGrid = GameObject.FindObjectOfType<Tilemap3D>();
         if (existingGrid != null) TilemapContext.tilemap = existingGrid;
         
@@ -51,7 +55,7 @@ public class TilemapEditorWindow : EditorWindow
 
     void DrawButtons()
     {
-        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.BeginHorizontal(backgroundStyle);
         
         Texture2D icon = TilemapIcons.PaintbrushIcon;
 
@@ -95,7 +99,7 @@ public class TilemapEditorWindow : EditorWindow
         for (int i = 0; i < tilePalette.tiles.Count; i++)
         {
             if (col == 0)
-                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.BeginHorizontal(backgroundStyle);
 
             var entry = tilePalette.tiles[i];
             Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab);
@@ -139,5 +143,18 @@ public class TilemapEditorWindow : EditorWindow
             EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.EndScrollView();
+    }
+
+    private void SetupStyles()
+    {
+        defaultBackgroundStyle = GUI.skin.label;
+        defaultBackgroundStyle = GUI.skin.button;
+        defaultBackgroundStyle = GUI.skin.textField;
+        
+
+        // Create a GUIStyle based on "box" but override background
+        backgroundStyle = new GUIStyle(GUI.skin.box);
+        backgroundStyle.normal.background = Texture2D.blackTexture;
+        backgroundStyle.border = new RectOffset(4, 4, 4, 4); // Optional: helps with padding visuals
     }
 }
