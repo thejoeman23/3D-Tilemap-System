@@ -18,13 +18,17 @@ public class TilemapEditorWindow : EditorWindow
     GUIStyle buttonStyle;
     
     Vector2 scrollPosition;
-    
+
     [MenuItem ("Jobs/3D Tilemap Tool")]
+    private void OnEnable()
+    {
+        SetupStyles();
+    }
+
     public static void ShowWindow() => EditorWindow.GetWindow(typeof(TilemapEditorWindow));
 
     void OnGUI()
     {
-        SetupStyles();
         
         Tilemap3D existingGrid = GameObject.FindObjectOfType<Tilemap3D>();
         if (existingGrid != null) TilemapContext.tilemap = existingGrid;
