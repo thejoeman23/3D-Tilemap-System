@@ -11,11 +11,36 @@ public static class TilePlacer
 
     private static void OnSceneGUI(SceneView sceneView)
     {
-        if (TilemapContext.selectedTool == SelectedTool.None) return;
+        if (TilemapContext.selectedTool == SelectedTool.None) 
+            return;
+        
+        if (EditorWindow.mouseOverWindow is not SceneView)
+            return;
         
         Event e = Event.current;
         if (e == null) return;
+        
+        UpdateMouseHoverPos(e, sceneView);
+        
+        // Handle left-click
+        if (e.type == EventType.MouseDown && e.button == 0 && !e.alt)
+        {
+            Tilemap3D.Instance.PlaceTile(TilemapContext.mouseHoverPos); // Assumes static reference to tilemap
+            e.Use(); // Consume event so Unity doesn't handle it
+        }
+    }
 
+    private static Vector3 FindPointAtY(Vector3 start, Vector3 end, float targetY)
+    {
+        Vector3 direction = end - start;
+        if (Mathf.Approximately(direction.y, 0f)) return Vector3.zero;
+
+        float t = (targetY - start.y) / direction.y;
+        return start + direction * t;
+    }
+
+    private static void UpdateMouseHoverPos(Event e, SceneView sceneView)
+    {
         Camera cam = sceneView.camera;
         if (!cam) return;
 
@@ -33,21 +58,5 @@ public static class TilePlacer
 
         TilemapContext.mouseHoverPos = new Vector3Int(roundedX, roundedY, roundedZ);
         HandleUtility.Repaint(); // force redraw
-        
-        // Handle left-click
-        if (e.type == EventType.MouseDown && e.button == 0 && !e.alt)
-        {
-            Tilemap3D.Instance.PlaceTile(TilemapContext.mouseHoverPos); // Assumes static reference to tilemap
-            e.Use(); // Consume event so Unity doesn't handle it
-        }
-    }
-
-    private static Vector3 FindPointAtY(Vector3 start, Vector3 end, float targetY)
-    {
-        Vector3 direction = end - start;
-        if (Mathf.Approximately(direction.y, 0f)) return Vector3.zero;
-
-        float t = (targetY - start.y) / direction.y;
-        return start + direction * t;
     }
 }

@@ -21,8 +21,6 @@ public class Tilemap3D : MonoBehaviour
     
     private void OnSceneGUI(SceneView sceneView)
     {
-        if (EditorWindow.mouseOverWindow is not SceneView)
-            return;
         
         int gridxSize = TilemapContext.gridSize.x;
         int gridzSize = TilemapContext.gridSize.y;

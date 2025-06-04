@@ -99,7 +99,7 @@ public class TilemapEditorWindow : EditorWindow
         for (int i = 0; i < tilePalette.tiles.Count; i++)
         {
             if (col == 0)
-                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.BeginHorizontal(backgroundStyle);
 
             var entry = tilePalette.tiles[i];
             Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab);
