@@ -17,4 +17,5 @@ public enum SelectedTool
     None,
     Paint,
     Erase,
+    BoxFill,
 }

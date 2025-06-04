@@ -1,4 +1,5 @@
 using System;
+using System.Net.Mime;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Tilemaps;
@@ -7,16 +8,19 @@ using Object = System.Object;
 public class TilemapEditorWindow : EditorWindow
 {
     [SerializeField] TilePalette tilePalette;
+    [SerializeField] private Color normalColor;
+    [SerializeField] Color hoverColor;
+    [SerializeField] Color selectedColor;
+    
     GUIStyle backgroundStyle;
-    GUIStyle defaultBackgroundStyle;
+    
+    GUIStyle selectedStyle;
+    GUIStyle buttonStyle;
+    
     Vector2 scrollPosition;
     
     [MenuItem ("Jobs/3D Tilemap Tool")]
-    public static void ShowWindow()
-    {
-        //Show existing window instance. If one doesn't exist, make one.
-        EditorWindow.GetWindow(typeof(TilemapEditorWindow));
-    }
+    public static void ShowWindow() => EditorWindow.GetWindow(typeof(TilemapEditorWindow));
 
     void OnGUI()
     {
@@ -42,7 +46,8 @@ public class TilemapEditorWindow : EditorWindow
         DrawButtons();
         
         DrawTiles();
-        
+
+        #region Variables
         EditorGUILayout.BeginVertical();
         
         TilemapContext.tileSize = EditorGUILayout.Vector3IntField(
@@ -50,39 +55,55 @@ public class TilemapEditorWindow : EditorWindow
             TilemapContext.tileSize
         );
         
+        normalColor = EditorGUILayout.ColorField(
+            new GUIContent("Normal Color"),
+            normalColor
+        );
+        
+        selectedColor = EditorGUILayout.ColorField(
+            new GUIContent("Selected Color"),
+            selectedColor
+        );
+        
+        hoverColor = EditorGUILayout.ColorField(
+            new GUIContent("Hover Color"),
+            hoverColor
+        );
+        
         EditorGUILayout.EndVertical();
+        #endregion
+        
+        Repaint();
     }
 
     void DrawButtons()
     {
         EditorGUILayout.BeginHorizontal(backgroundStyle);
-        
-        Texture2D icon = TilemapIcons.PaintbrushIcon;
 
-        GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.normal.background = Texture2D.grayTexture;
-
-        if (GUILayout.Button(icon, buttonStyle, GUILayout.Width(50), GUILayout.Height(50)))
+        foreach (SelectedTool tool in Enum.GetValues(typeof(SelectedTool)))
         {
-            TilemapContext.selectedTool = SelectedTool.Paint;
-        }
-
-        icon = TilemapIcons.EraserIcon;
-        
-        if (GUILayout.Button(icon, buttonStyle, GUILayout.Width(50), GUILayout.Height(50)))
-        {
-            TilemapContext.selectedTool = SelectedTool.Paint;
-        }
-
-        icon = TilemapIcons.BoxFillIcon;
-        
-        if (GUILayout.Button(icon, buttonStyle, GUILayout.Width(50), GUILayout.Height(50)))
-        {
-            TilemapContext.selectedTool = SelectedTool.Paint;
+            DrawToolButton(tool);
         }
         
         EditorGUILayout.EndHorizontal();
     }
+
+    void DrawToolButton(SelectedTool tool)
+    {
+        Texture2D icon = TilemapIcons.GetIcon(tool);
+        if (icon == null) return;
+
+        GUIStyle style = (TilemapContext.selectedTool == tool) ? selectedStyle : buttonStyle;
+
+        if (GUILayout.Button(icon, style, GUILayout.Width(50), GUILayout.Height(50)))
+        {
+            // Toggle selection
+            TilemapContext.selectedTool = (TilemapContext.selectedTool == tool)
+                ? SelectedTool.None
+                : tool;
+        }
+    }
+
 
     void DrawTiles()
     {
@@ -103,30 +124,18 @@ public class TilemapEditorWindow : EditorWindow
 
             var entry = tilePalette.tiles[i];
             Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab);
-
-            GUIStyle style = new GUIStyle(GUI.skin.button)
+            if (preview == null)
             {
-                fixedWidth = tileSize,
-                fixedHeight = tileSize,
-                margin = new RectOffset(2, 2, 2, 2)
-            };
-
-            if (TilemapContext.currentSelectedTile == entry.prefab)
-            {
-                style.normal.background = Texture2D.grayTexture;
+                col++;
+                continue;
             }
 
-            Rect rect = GUILayoutUtility.GetRect(tileSize, tileSize, style);
+            bool isSelected = TilemapContext.currentSelectedTile == entry.prefab;
+            GUIStyle style = isSelected ? selectedStyle : buttonStyle;
 
-            if (GUI.Button(rect, GUIContent.none, style))
+            if (GUILayout.Button(preview, style, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
             {
-                TilemapContext.currentSelectedTile = entry.prefab;
-            }
-
-            if (preview != null)
-            {
-                // Draw the image manually over the button
-                GUI.DrawTexture(rect, preview, ScaleMode.ScaleToFit);
+                TilemapContext.currentSelectedTile = isSelected ? null : entry.prefab;
             }
 
             col++;
@@ -138,23 +147,37 @@ public class TilemapEditorWindow : EditorWindow
                 row++;
             }
         }
-
+        
         if (col > 0)
             EditorGUILayout.EndHorizontal();
+
 
         EditorGUILayout.EndScrollView();
     }
 
     private void SetupStyles()
     {
-        defaultBackgroundStyle = GUI.skin.label;
-        defaultBackgroundStyle = GUI.skin.button;
-        defaultBackgroundStyle = GUI.skin.textField;
+        buttonStyle = new GUIStyle(GUI.skin.button);
+        buttonStyle.normal.background = SetTexture(normalColor);
+        buttonStyle.hover.background = SetTexture(hoverColor);
         
+        selectedStyle = new GUIStyle(GUI.skin.button);
+        selectedStyle.normal.background = SetTexture(selectedColor);
 
         // Create a GUIStyle based on "box" but override background
         backgroundStyle = new GUIStyle(GUI.skin.box);
         backgroundStyle.normal.background = Texture2D.blackTexture;
         backgroundStyle.border = new RectOffset(4, 4, 4, 4); // Optional: helps with padding visuals
+    }
+
+    private Texture2D SetTexture(Color color)
+    {
+        Texture2D tex = new Texture2D(1, 1);
+        tex.SetPixel(0, 0, color);
+        tex.wrapMode = TextureWrapMode.Clamp;
+        tex.filterMode = FilterMode.Point; // if you're going for a crisp pixel look
+        tex.Apply();
+
+        return tex;
     }
 }
