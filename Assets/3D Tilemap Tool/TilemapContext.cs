@@ -3,7 +3,7 @@ using UnityEngine;
 public static class TilemapContext
 {
     public static SelectedTool selectedTool;
-    public static GameObject currentSelectedTile;
+    public static TilePrefabEntry currentSelectedTile;
     public static Tilemap3D currentTilemap;
     public static Vector3Int tileSize = Vector3Int.one;
     public static int yValue;

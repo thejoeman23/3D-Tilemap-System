@@ -59,6 +59,6 @@ public class Tilemap3D : MonoBehaviour
 
     public void PlaceTile(Vector3 position)
     {
-        Instantiate(TilemapContext.currentSelectedTile, position, Quaternion.identity);
+        Instantiate(TilemapContext.currentSelectedTile.prefab, position, Quaternion.identity);
     }
 }

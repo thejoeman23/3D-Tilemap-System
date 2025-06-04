@@ -119,27 +119,30 @@ public class TilemapEditorWindow : EditorWindow
 
         for (int i = 0; i < tilePalette.tiles.Count; i++)
         {
+            var entry = tilePalette.tiles[i];
+
+            // Get tile preview
+            Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab);
+            if (preview == null)
+                continue; // Skip before layout if no preview available
+
+            // Start new row if needed
             if (col == 0)
                 EditorGUILayout.BeginHorizontal(backgroundStyle);
 
-            var entry = tilePalette.tiles[i];
-            Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab);
-            if (preview == null)
-            {
-                col++;
-                continue;
-            }
-
-            bool isSelected = TilemapContext.currentSelectedTile == entry.prefab;
+            // Determine style based on selection
+            bool isSelected = TilemapContext.currentSelectedTile == entry;
             GUIStyle style = isSelected ? selectedStyle : buttonStyle;
 
+            // Draw the button with tile preview
             if (GUILayout.Button(preview, style, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
             {
-                TilemapContext.currentSelectedTile = isSelected ? null : entry.prefab;
+                TilemapContext.currentSelectedTile = isSelected ? null : entry;
             }
 
             col++;
 
+            // End row if full
             if (col >= tilesPerRow)
             {
                 EditorGUILayout.EndHorizontal();
@@ -147,12 +150,13 @@ public class TilemapEditorWindow : EditorWindow
                 row++;
             }
         }
-        
+
+        // If last row isn't full, close it
         if (col > 0)
             EditorGUILayout.EndHorizontal();
 
-
         EditorGUILayout.EndScrollView();
+
     }
 
     private void SetupStyles()
