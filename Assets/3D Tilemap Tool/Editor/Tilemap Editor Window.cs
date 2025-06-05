@@ -20,15 +20,12 @@ public class TilemapEditorWindow : EditorWindow
     Vector2 scrollPosition;
 
     [MenuItem ("Jobs/3D Tilemap Tool")]
-    private void OnEnable()
-    {
-        SetupStyles();
-    }
 
     public static void ShowWindow() => EditorWindow.GetWindow(typeof(TilemapEditorWindow));
 
     void OnGUI()
     {
+        SetupStyles();
         
         Tilemap3D existingGrid = GameObject.FindObjectOfType<Tilemap3D>();
         if (existingGrid != null) TilemapContext.tilemap = existingGrid;
@@ -108,7 +105,6 @@ public class TilemapEditorWindow : EditorWindow
         }
     }
 
-
     void DrawTiles()
     {
         float tileSize = 80f;
@@ -116,29 +112,27 @@ public class TilemapEditorWindow : EditorWindow
         float totalTileSize = tileSize + padding;
         int tilesPerRow = Mathf.FloorToInt((position.width - 20) / totalTileSize);
 
-        int row = 0;
         int col = 0;
 
         scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+
+        EditorGUILayout.BeginVertical();
+
+        EditorGUILayout.BeginHorizontal(backgroundStyle); // Always open one
 
         for (int i = 0; i < tilePalette.tiles.Count; i++)
         {
             var entry = tilePalette.tiles[i];
 
-            // Get tile preview
+            // Get preview
             Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab);
             if (preview == null)
-                continue; // Skip before layout if no preview available
+                continue;
 
-            // Start new row if needed
-            if (col == 0)
-                EditorGUILayout.BeginHorizontal(backgroundStyle);
-
-            // Determine style based on selection
+            // Draw button
             bool isSelected = TilemapContext.currentSelectedTile == entry;
             GUIStyle style = isSelected ? selectedStyle : buttonStyle;
 
-            // Draw the button with tile preview
             if (GUILayout.Button(preview, style, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
             {
                 TilemapContext.currentSelectedTile = isSelected ? null : entry;
@@ -146,22 +140,22 @@ public class TilemapEditorWindow : EditorWindow
 
             col++;
 
-            // End row if full
+            // When a row is full, close it and open a new one
             if (col >= tilesPerRow)
             {
                 EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal(backgroundStyle);
                 col = 0;
-                row++;
             }
         }
 
-        // If last row isn't full, close it
-        if (col > 0)
-            EditorGUILayout.EndHorizontal();
+        // Finish any row left open
+        EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.EndVertical();
         EditorGUILayout.EndScrollView();
-
     }
+
 
     private void SetupStyles()
     {
