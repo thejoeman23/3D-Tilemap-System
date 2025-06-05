@@ -4,15 +4,29 @@ using System.Collections.Generic;
 [CreateAssetMenu(menuName = "3D Tilemap/Tile Palette")]
 public class TilePalette : ScriptableObject
 {
-    public List<TilePrefabEntry> tiles;
+    public List<TileEntry> tiles;
 }
 
 [System.Serializable]
-public class TilePrefabEntry
+public class TileEntry
 {
     public string label;
     public GameObject prefab;
-    public TileType type; // enum: Floor, Wall, Corner, Event, etc.
+    public TileType type;
+}
+
+[System.Serializable]
+public class Tile
+{
+    public GameObject prefabInstance;
+    public TileType type;
+
+    public Tile(GameObject prefabInstance, TileType type, string label)
+    {
+        this.prefabInstance = prefabInstance;
+        this.prefabInstance.name = label;
+        this.type = type;
+    }
 }
 
 [System.Serializable]
