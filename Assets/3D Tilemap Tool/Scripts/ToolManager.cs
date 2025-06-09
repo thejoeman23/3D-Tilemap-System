@@ -18,6 +18,10 @@ public static class ToolManager
 
         if (_selectedTool == null)
             return;
+        
+        if (EditorWindow.mouseOverWindow is not SceneView)
+            return;
+
 
         Event e = Event.current;
 

@@ -16,8 +16,16 @@ public class BoxFill : MonoBehaviour, ITool
     {
         Vector3Int position = TilemapContext.mouseHoverPos;
 
+        if (_clickCounter == 2)
+            GridDrawer.Instance.ClearGridPositions();
+
         _points.Add(position);
         _clickCounter++;
+
+        if (_clickCounter < 3)
+        {
+            GridDrawer.Instance.AddGridPosition(position);
+        }
 
         if (_clickCounter == 3)
         {
@@ -26,6 +34,7 @@ public class BoxFill : MonoBehaviour, ITool
             _points.Clear();
         }
     }
+
 
     public void OnDeselected()
     {
