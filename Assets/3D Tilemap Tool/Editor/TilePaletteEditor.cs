@@ -6,6 +6,8 @@ using UnityEditorInternal;
 [CustomEditor(typeof(TilePalette))]
 public class TilePaletteEditor : Editor
 {
+    // NOTE: This isnt really needed I just felt like making it so i wont comment
+    
     private SerializedProperty tilesProp;
 
     ReorderableList tilesList;
