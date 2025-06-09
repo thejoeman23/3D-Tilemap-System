@@ -27,7 +27,7 @@ public class TilemapEditorWindow : EditorWindow
     {
         SetupStyles();
         
-        Tilemap3D existingGrid = GameObject.FindObjectOfType<Tilemap3D>();
+        GridDrawer existingGrid = GameObject.FindObjectOfType<GridDrawer>();
         if (existingGrid != null) TilemapContext.tilemap = existingGrid;
         
         if (TilemapContext.tilemap == null)
@@ -35,8 +35,8 @@ public class TilemapEditorWindow : EditorWindow
             if (GUILayout.Button("Create Grid"))
             {
                 GameObject grid = new GameObject("Grid3D");
-                grid.AddComponent<Tilemap3D>();
-                TilemapContext.tilemap = grid.GetComponent<Tilemap3D>();
+                grid.AddComponent<GridDrawer>();
+                TilemapContext.tilemap = grid.GetComponent<GridDrawer>();
             }
         }
         
@@ -81,7 +81,7 @@ public class TilemapEditorWindow : EditorWindow
     {
         EditorGUILayout.BeginHorizontal(backgroundStyle);
 
-        foreach (SelectedTool tool in Enum.GetValues(typeof(SelectedTool)))
+        foreach (ITool tool in TilemapContext.tools)
         {
             DrawToolButton(tool);
         }
@@ -89,7 +89,7 @@ public class TilemapEditorWindow : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
-    void DrawToolButton(SelectedTool tool)
+    void DrawToolButton(ITool tool)
     {
         Texture2D icon = TilemapIcons.GetIcon(tool);
         if (icon == null) return;
@@ -100,7 +100,7 @@ public class TilemapEditorWindow : EditorWindow
         {
             // Toggle selection
             TilemapContext.selectedTool = (TilemapContext.selectedTool == tool)
-                ? SelectedTool.None
+                ? null
                 : tool;
         }
     }

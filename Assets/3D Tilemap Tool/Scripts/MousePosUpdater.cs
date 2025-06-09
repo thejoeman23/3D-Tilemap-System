@@ -2,16 +2,16 @@ using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
-public static class TilePlacer
+public static class MousePosUpdater
 {
-    static TilePlacer()
+    static MousePosUpdater()
     {
         SceneView.duringSceneGui += OnSceneGUI;
     }
 
     private static void OnSceneGUI(SceneView sceneView)
     {
-        if (TilemapContext.selectedTool == SelectedTool.None) 
+        if (TilemapContext.selectedTool == null) 
             return;
         
         if (EditorWindow.mouseOverWindow is not SceneView)
@@ -21,13 +21,6 @@ public static class TilePlacer
         if (e == null) return;
         
         UpdateMouseHoverPos(e, sceneView);
-        
-        // Handle left-click
-        if (e.type == EventType.MouseDown && e.button == 0 && !e.alt)
-        {
-            Tilemap3D.Instance.PlaceTile(TilemapContext.mouseHoverPos); // Assumes static reference to tilemap
-            e.Use(); // Consume event so Unity doesn't handle it
-        }
     }
 
     private static Vector3 FindPointAtY(Vector3 start, Vector3 end, float targetY)

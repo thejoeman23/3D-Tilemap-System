@@ -1,13 +1,10 @@
-using System;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [ExecuteAlways]
-public class Tilemap3D : MonoBehaviour
+public class GridDrawer : MonoBehaviour
 {
-    public static Tilemap3D Instance { get; private set; }
+    public static GridDrawer Instance { get; private set; }
     
     void OnEnable()
     {
@@ -22,7 +19,7 @@ public class Tilemap3D : MonoBehaviour
     
     private void OnSceneGUI(SceneView sceneView)
     {
-        if (TilemapContext.selectedTool == SelectedTool.None) 
+        if (TilemapContext.selectedTool == null) 
             return;
         
         if (EditorWindow.mouseOverWindow is not SceneView)
@@ -63,17 +60,5 @@ public class Tilemap3D : MonoBehaviour
             return true;
         else
             return false;
-    }
-
-    public void PlaceTile(Vector3Int position)
-    {
-        if (TilemapContext.placedTiles.ContainsKey(position))
-            return;
-        
-        TileEntry entry = TilemapContext.currentSelectedTile;
-        GameObject prefabInstance = Instantiate(entry.prefab, position, Quaternion.identity);
-
-        Tile tile = new Tile(prefabInstance, entry.type, entry.label);
-        TilemapContext.placedTiles.Add(position, tile);
     }
 }

@@ -7,13 +7,13 @@ public static class TilemapIcons
     public static Texture2D EraserIcon { get; private set; } = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/3D Tilemap Tool/Icons/Eraser.png");
     public static Texture2D BoxFillIcon { get; private set; } = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/3D Tilemap Tool/Icons/BoxFill.png");
 
-    public static Texture2D GetIcon(SelectedTool tool)
+    public static Texture2D GetIcon(ITool tool)
     {
         return tool switch
         {
-            SelectedTool.Paint => PaintbrushIcon,
-            SelectedTool.Erase => EraserIcon,
-            SelectedTool.BoxFill => BoxFillIcon,
+            Paint => PaintbrushIcon,
+            Erase => EraserIcon,
+            BoxFill => BoxFillIcon,
             _ => null
         };
     }
