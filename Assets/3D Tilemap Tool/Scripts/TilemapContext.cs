@@ -11,7 +11,8 @@ public static class TilemapContext
     {
         new Paint(),
         new Erase(),
-        new BoxFill()
+        new BoxFill(),
+        new BoxErase()
     };
     
     public static Dictionary<Vector3Int, Tile> placedTiles = new Dictionary<Vector3Int, Tile>(); // A record of all tiles placed on the grid
