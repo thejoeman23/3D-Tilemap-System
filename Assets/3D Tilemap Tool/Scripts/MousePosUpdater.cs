@@ -4,25 +4,58 @@ using UnityEngine;
 [InitializeOnLoad] // Automatically creates the object and calls MousePosUpdater()
 public static class MousePosUpdater
 {
-    // Pretty self explanitory name
-    
+    // Variables for showing the temporary floating Y-level label
+    private static bool _showYLabel = false;
+    private static float _yLabelTime = 0f;
+    private static GUIStyle _labelStyle;
+
     static MousePosUpdater()
     {
         SceneView.duringSceneGui += OnSceneGUI;
     }
 
+    static void SetupStyle()
+    {
+        // Setup label style once
+        _labelStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = 14,
+            fontStyle = FontStyle.Bold,
+            normal = { textColor = Color.yellow }
+        };
+    }
+
     private static void OnSceneGUI(SceneView sceneView) // Called every frame
     {
-        if (TilemapContext.selectedTool == null) 
+        if (TilemapContext.selectedTool == null)
             return;
-        
+
         if (EditorWindow.mouseOverWindow is not SceneView)
             return;
-        
+
         Event e = Event.current;
         if (e == null) return;
-        
+
+        SetupStyle();
+
         UpdateMouseHoverPos(e, sceneView);
+
+        UpdateYPosition(e, sceneView);
+
+        // Draw the floating Y label near the mouse cursor if enabled and not expired
+        if (_showYLabel && Time.realtimeSinceStartup - _yLabelTime < 1f)
+        {
+            Vector2 mousePos = e.mousePosition;
+            Handles.BeginGUI();
+            GUI.Label(new Rect(mousePos.x + 15, mousePos.y, 100, 20), $"Y: {TilemapContext.yValue}", _labelStyle);
+            Handles.EndGUI();
+
+            sceneView.Repaint(); // Keep repainting while label is visible
+        }
+        else
+        {
+            _showYLabel = false;
+        }
     }
 
     // Finds the point along a line (from start to end) where the Y coordinate equals targetY
@@ -72,5 +105,23 @@ public static class MousePosUpdater
 
         // Ask Unity to repaint the scene view so the hover effect is visible
         HandleUtility.Repaint();
+    }
+
+    private static void UpdateYPosition(Event e, SceneView sceneView)
+    {
+        if (e.type == EventType.ScrollWheel && e.control)
+        {
+            // Adjust mouseHoverPos.y based on scroll delta
+            int delta = e.delta.y > 0 ? -1 : 1; // scroll up increases y, down decreases y
+
+            Debug.Log("Delta : " + e.delta.y);
+            TilemapContext.yValue += delta;
+
+            // Show floating Y-level label for 1 second after update
+            _showYLabel = true;
+            _yLabelTime = Time.realtimeSinceStartup;
+
+            e.Use(); // Consume the event so Unity doesn't also zoom the SceneView
+        }
     }
 }

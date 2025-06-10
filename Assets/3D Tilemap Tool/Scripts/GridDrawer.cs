@@ -69,7 +69,7 @@ public class GridDrawer : MonoBehaviour
 
         Vector3 size = new Vector3(
             xSize * TilemapContext.tileSize.x,
-            0.1f, // small height for 2D visual
+            0f, // small height for 2D visual
             zSize * TilemapContext.tileSize.x);
 
         Handles.color = Color.red;
@@ -145,7 +145,7 @@ public class GridDrawer : MonoBehaviour
                 
                 // Calculates position of square then draws it
                 Vector3 pos = new Vector3(x * TilemapContext.tileSize.x, TilemapContext.yValue, z * TilemapContext.tileSize.x);
-                Handles.DrawWireCube(pos, new Vector3(TilemapContext.tileSize.x, TilemapContext.yValue, TilemapContext.tileSize.x));
+                Handles.DrawWireCube(pos, new Vector3(TilemapContext.tileSize.x, 0, TilemapContext.tileSize.x));
             }
         }
     }

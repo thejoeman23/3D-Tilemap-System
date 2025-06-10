@@ -166,7 +166,8 @@ public class TilemapEditorWindow : EditorWindow
             }
         }
 
-        EditorGUILayout.EndHorizontal(); // End row
+        if (col != 0)
+            EditorGUILayout.EndHorizontal(); // End row
 
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndScrollView(); 
