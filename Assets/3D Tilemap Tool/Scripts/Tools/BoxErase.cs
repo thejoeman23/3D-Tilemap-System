@@ -74,6 +74,9 @@ public class BoxErase : MonoBehaviour, ITool
                     if (!TilemapContext.placedTiles.TryGetValue(pos, out Tile tile))
                         continue; // skip already placed tiles
 
+                    if (!IsInLayer(tile))
+                        continue; // skip if its not in the current selected layer
+                    
                     GameObject instance = tile.prefabInstance;
                     DestroyImmediate(instance);
                     
@@ -81,5 +84,10 @@ public class BoxErase : MonoBehaviour, ITool
                 }
             }
         }
+    }
+
+    bool IsInLayer(Tile tile)
+    {
+        return TilemapContext.layers.ContainsValue(tile.prefabInstance.transform.parent);
     }
 }

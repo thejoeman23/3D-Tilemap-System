@@ -74,7 +74,11 @@ public class BoxFill : MonoBehaviour, ITool
                     if (TilemapContext.placedTiles.ContainsKey(pos))
                         continue; // skip already placed tiles
 
+                    string key = TilemapContext.keys[TilemapContext.currentLayerIndex];
+                    
                     GameObject instance = Instantiate(entry.prefab, pos, Quaternion.identity);
+                    instance.transform.SetParent(TilemapContext.layers[key]);
+                    
                     Tile tile = new(instance, entry.type, entry.label);
                     TilemapContext.placedTiles.Add(pos, tile);
                 }

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mime;
 using UnityEngine;
 using UnityEditor;
@@ -20,6 +22,8 @@ public class TilemapEditorWindow : EditorWindow
     GUIStyle buttonStyle;
     
     Vector2 scrollPosition;
+
+    string _newLayerName = "New Layer Name";
 
     
     [MenuItem ("Jobs/3D Tilemap Tool")] // Creates Editor Window in Jobs dropdown
@@ -43,10 +47,17 @@ public class TilemapEditorWindow : EditorWindow
                 TilemapContext.tilemap = grid.GetComponent<GridDrawer>();
             }
         }
+
+        EditorGUILayout.BeginVertical(backgroundStyle);
+        
+        DrawLayerSelection();
         
         // Draw input for tilepalette
         tilePalette = (TilePalette)EditorGUILayout.ObjectField("Tile Palette", tilePalette, typeof(TilePalette), true);
-
+        
+        EditorGUILayout.EndVertical();
+        
+        
         // If no tilepalette is selected dont draw anything else
         if (tilePalette == null || tilePalette.tiles == null) return;
 
@@ -85,6 +96,72 @@ public class TilemapEditorWindow : EditorWindow
         
         Repaint();
     }
+
+    bool _isNamingLayer = false;
+    
+    void DrawLayerSelection()
+    {
+        TilemapContext.keys = TilemapContext.layers.Keys.ToList();
+
+        EditorGUILayout.BeginHorizontal();
+        
+        EditorGUIUtility.labelWidth = 90; // or any smaller number
+        
+        if (TilemapContext.layers.Count == 0)
+            EditorGUILayout.HelpBox("No Layers Available", MessageType.Info);
+        else
+            TilemapContext.currentLayerIndex = EditorGUILayout.Popup("Layer", TilemapContext.currentLayerIndex, TilemapContext.keys.ToArray());
+
+        if (!_isNamingLayer)
+        {
+            if (GUILayout.Button("Add Layer", GUILayout.Width(80)))
+            {
+                _isNamingLayer = true;
+            }   
+        }
+        else
+        {
+            _newLayerName = EditorGUILayout.TextField("", _newLayerName);
+
+            if (GUILayout.Button("\u2713", GUILayout.Width(30)))
+            {
+                string verifiedOriginalName = VerifiedLayerName(_newLayerName);
+                
+                GameObject newLayer = new GameObject(verifiedOriginalName);
+                TilemapContext.layers.Add(verifiedOriginalName, newLayer.transform);
+                newLayer.transform.SetParent(TilemapContext.tilemap.transform);
+
+                _isNamingLayer = false;
+                _newLayerName = "New Layer Name";
+            }
+
+            if (GUILayout.Button("\u274C", GUILayout.Width(30)))
+            {
+                _isNamingLayer = false;
+            }
+        }
+        
+        EditorGUILayout.EndHorizontal();
+    }
+
+    string VerifiedLayerName(string baseName)
+    {
+        return GenerateUniqueName(baseName, 1);
+    }
+
+    string GenerateUniqueName(string baseName, int n)
+    {
+        if (!TilemapContext.layers.ContainsKey(baseName))
+            return baseName;
+
+        string newName = baseName + n;
+        if (!TilemapContext.layers.ContainsKey(newName))
+            return newName;
+        else
+            return GenerateUniqueName(baseName, n + 1);
+    }
+
+
 
     void DrawToolButtons() // Draws buttons for tools
     {
@@ -131,12 +208,10 @@ public class TilemapEditorWindow : EditorWindow
         scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition); // Start scroll view
 
         EditorGUILayout.BeginVertical();
+        EditorGUILayout.BeginHorizontal(backgroundStyle);
 
         for (int i = 0; i < tilePalette.tiles.Count; i++)
         {
-            if (col == 0) // If its the first collumn begin row
-                EditorGUILayout.BeginHorizontal(backgroundStyle);
-            
             var entry = tilePalette.tiles[i]; // Gets tile from tilepallette
 
             // Get preview
@@ -162,13 +237,13 @@ public class TilemapEditorWindow : EditorWindow
             if (col >= tilesPerRow)
             {
                 EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal(backgroundStyle);
                 col = 0;
             }
         }
-
-        if (col != 0)
-            EditorGUILayout.EndHorizontal(); // End row
-
+        
+        EditorGUILayout.EndHorizontal(); // End row
+        
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndScrollView(); 
     }

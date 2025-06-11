@@ -16,6 +16,10 @@ public static class TilemapContext
     };
     
     public static Dictionary<Vector3Int, Tile> placedTiles = new Dictionary<Vector3Int, Tile>(); // A record of all tiles placed on the grid
+    public static Dictionary<string, Transform> layers = new Dictionary<string, Transform>(); // A record of all the layers
+    public static List<string> keys;
+    public static int currentLayerIndex;
+    
     public static TileEntry currentSelectedTile; // The current selected tile that will be placed
     public static GridDrawer tilemap; // The grid 
     

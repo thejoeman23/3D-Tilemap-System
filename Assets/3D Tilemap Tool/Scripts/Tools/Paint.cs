@@ -17,11 +17,15 @@ public class Paint : MonoBehaviour, ITool
             return;
         
         // Pull current selected tile and instantiates it into the scene
+        
+        string key = TilemapContext.keys[TilemapContext.currentLayerIndex];
+                    
         TileEntry entry = TilemapContext.currentSelectedTile;
-        GameObject prefabInstance = Instantiate(entry.prefab, position, Quaternion.identity);
+        GameObject instance = Instantiate(entry.prefab, position, Quaternion.identity);
+        instance.transform.SetParent(TilemapContext.layers[key]);
         
         // Creates Tile object and sets up variables
-        Tile tile = new Tile(prefabInstance, entry.type, entry.label);
+        Tile tile = new Tile(instance, entry.type, entry.label);
         
         // Adds the new tile to dictionary of placed tiles
         TilemapContext.placedTiles.Add(position, tile);

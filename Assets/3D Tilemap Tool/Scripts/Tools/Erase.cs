@@ -16,13 +16,23 @@ public class Erase : MonoBehaviour, ITool
         if (!TilemapContext.placedTiles.TryGetValue(position, out Tile tile))
             return;
         
+        if (!IsInLayer(tile))
+            return;
+        
         // Remove tile from dictionary and destroy the object from sceneview
         TilemapContext.placedTiles.Remove(position);
         DestroyImmediate(tile.prefabInstance);
     }
 
+    bool IsInLayer(Tile tile)
+    {
+        return TilemapContext.layers.ContainsValue(tile.prefabInstance.transform.parent);
+    }
+    
     public void OnDeselected()
     {
         
     }
+    
+    
 }

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using NUnit.Framework.Constraints;
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 
 [ExecuteAlways]
 public class GridDrawer : MonoBehaviour
@@ -132,7 +130,7 @@ public class GridDrawer : MonoBehaviour
                 float dz = z - gridPosition.z;
                 float xz = (dx * dx) + (dz * dz);
 
-                float alpha = Mathf.Clamp01(1f - (xz / r));
+                float alpha = Mathf.Clamp01(.5f - (xz / r));
 
                 Color color = IsMiddle(x, z, gridPosition) ? 
                     Color.red : // If its the middle of the grid (where the object will be placed) color it red for user clarity
