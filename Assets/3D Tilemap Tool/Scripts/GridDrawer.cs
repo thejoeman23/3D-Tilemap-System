@@ -53,20 +53,20 @@ public class GridDrawer : MonoBehaviour
         if (EditorWindow.mouseOverWindow is not SceneView)
             return;
 
-        Debug.Log(_boxFillPositions.Count);
-
         Vector3Int mousePos = TilemapContext.mouseHoverPos;
         
+        // Draw Grid at MousePos
         DrawGrid(mousePos, TilemapContext.yValue, Color.cyan, Color.red);
 
+        // Draw Grid at y=0 and draw a line between them to tell how high up you are
         if (TilemapContext.yValue != 0)
         {
             DrawGrid(TilemapContext.mouseHoverPos, 0, Color.gray, Color.gray);
             
             Handles.color = TilemapContext.yValue > 0 ? Color.cyan : Color.red;
-            Handles.DrawLine(new Vector3(mousePos.x, TilemapContext.yValue, mousePos.z), new Vector3(mousePos.x, 0, mousePos.z));
+            Handles.DrawDottedLine(new Vector3(mousePos.x, TilemapContext.yValue, mousePos.z), new Vector3(mousePos.x, 0, mousePos.z), 5);
         }
-
+        
         if (_boxFillPositions.Count != 0)
             DrawBoxFillVisuals();
 
