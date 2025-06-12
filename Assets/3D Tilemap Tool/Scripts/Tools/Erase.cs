@@ -26,7 +26,7 @@ public class Erase : MonoBehaviour, ITool
 
     bool IsInLayer(Tile tile)
     {
-        return TilemapContext.layers.ContainsValue(tile.prefabInstance.transform.parent);
+        return LayerManager.Layers.ContainsValue(tile.prefabInstance.transform.parent);
     }
     
     public void OnDeselected()

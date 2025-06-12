@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.Tilemaps;
-using Object = System.Object;
 
 public class TilemapEditorWindow : EditorWindow
 {
@@ -34,7 +29,7 @@ public class TilemapEditorWindow : EditorWindow
         SetupStyles();
         
         // Search for existing grid
-        GridDrawer existingGrid = GameObject.FindObjectOfType<GridDrawer>();
+        GridDrawer existingGrid = GridDrawer.Instance;
         if (existingGrid != null) TilemapContext.tilemap = existingGrid;
         
         // If no grid exists add option to create a grid
@@ -101,16 +96,43 @@ public class TilemapEditorWindow : EditorWindow
     
     void DrawLayerSelection()
     {
-        TilemapContext.keys = TilemapContext.layers.Keys.ToList();
-
         EditorGUILayout.BeginHorizontal();
         
         EditorGUIUtility.labelWidth = 90; // or any smaller number
         
-        if (TilemapContext.layers.Count == 0)
+        if (LayerManager.Layers.Count == 0)
             EditorGUILayout.HelpBox("No Layers Available", MessageType.Info);
         else
-            TilemapContext.currentLayerIndex = EditorGUILayout.Popup("Layer", TilemapContext.currentLayerIndex, TilemapContext.keys.ToArray());
+        {
+            LayerManager.SetCurrentLayerIndex(
+                EditorGUILayout.Popup
+                (
+                    "Layer",
+                    LayerManager.CurrentLayerIndex,
+                    LayerManager.GetLayerNames().ToArray()
+                )
+            );
+            
+            if (GUILayout.Button("\u274C", GUILayout.Width(30)))
+            {
+                int currentIndex = LayerManager.GetCurrentLayerIndex();
+                if (currentIndex > 0)
+                {
+                    LayerManager.Layers.Remove(LayerManager.CurrentLayer);
+                    LayerManager.SetCurrentLayerIndex(currentIndex - 1);
+                }
+                else if (currentIndex == 0 && LayerManager.Layers.Count > 0)
+                {
+                    LayerManager.Layers.Remove(LayerManager.CurrentLayer);
+                    LayerManager.SetCurrentLayerIndex(currentIndex);
+                }
+                else
+                {
+                    LayerManager.Layers.Remove(LayerManager.CurrentLayer);
+                    LayerManager.CurrentLayer = null;
+                }
+            }  
+        }
 
         if (!_isNamingLayer)
         {
@@ -125,11 +147,7 @@ public class TilemapEditorWindow : EditorWindow
 
             if (GUILayout.Button("\u2713", GUILayout.Width(30)))
             {
-                string verifiedOriginalName = VerifiedLayerName(_newLayerName);
-                
-                GameObject newLayer = new GameObject(verifiedOriginalName);
-                TilemapContext.layers.Add(verifiedOriginalName, newLayer.transform);
-                newLayer.transform.SetParent(TilemapContext.tilemap.transform);
+                LayerManager.AddLayer(_newLayerName);
 
                 _isNamingLayer = false;
                 _newLayerName = "New Layer Name";
@@ -143,25 +161,6 @@ public class TilemapEditorWindow : EditorWindow
         
         EditorGUILayout.EndHorizontal();
     }
-
-    string VerifiedLayerName(string baseName)
-    {
-        return GenerateUniqueName(baseName, 1);
-    }
-
-    string GenerateUniqueName(string baseName, int n)
-    {
-        if (!TilemapContext.layers.ContainsKey(baseName))
-            return baseName;
-
-        string newName = baseName + n;
-        if (!TilemapContext.layers.ContainsKey(newName))
-            return newName;
-        else
-            return GenerateUniqueName(baseName, n + 1);
-    }
-
-
 
     void DrawToolButtons() // Draws buttons for tools
     {
@@ -213,22 +212,25 @@ public class TilemapEditorWindow : EditorWindow
         for (int i = 0; i < tilePalette.tiles.Count; i++)
         {
             var entry = tilePalette.tiles[i]; // Gets tile from tilepallette
-
-            // Get preview
-            Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab); // Gets visual preview of the prefab to display later
-            if (preview == null)
-                continue;
-
+            
             // Draw button
             bool isSelected = TilemapContext.currentSelectedTile == entry; // Checks is this tile is currently the selected tile 
             GUIStyle style = isSelected ? selectedStyle : buttonStyle; // If its selected use the selected style if not use the normal style
-
-            // NOTE: GUILayout.Button acts as a bool and a function. It creates the button then if its pressed (true or false) it runs the if statement
-            if (GUILayout.Button(preview, style, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
+            
+            // Get preview
+            Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab); // Gets visual preview of the prefab to display later
+            
+            if (preview == null)
             {
-                TilemapContext.currentSelectedTile = isSelected ? 
-                    null :  // Deselect if already selected
-                    entry;  // Select if not already selected
+                GUILayout.Box("No Preview", style, GUILayout.Width(tileSize), GUILayout.Height(tileSize));
+            }
+            else
+            {
+                // NOTE: GUILayout.Button acts as a bool and a function. It creates the button then if its pressed (true or false) it runs the if statement
+                if (GUILayout.Button(preview, style, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
+                {
+                    TilemapContext.currentSelectedTile = isSelected ? null : entry;
+                }
             }
 
             col++;

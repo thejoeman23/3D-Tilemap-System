@@ -25,6 +25,8 @@ public class GridDrawer : MonoBehaviour
     
     private void OnSceneGUI(SceneView sceneView) // Called Every Frame
     {
+        CheckForExcessLayers();
+        
         if (TilemapContext.selectedTool == null) 
             return;
         
@@ -40,76 +42,75 @@ public class GridDrawer : MonoBehaviour
         HandleUtility.Repaint(); // Force SceneView to redraw
     }
 
-   private void DrawBoxFillVisuals()
-{
-    Vector3Int mousePos = TilemapContext.mouseHoverPos;
-
-    if (_boxFillPositions.Count == 1)
+    private void DrawBoxFillVisuals()
     {
-        Vector3Int point = _boxFillPositions[0];
+        Vector3Int mousePos = TilemapContext.mouseHoverPos;
 
-        int xMin = Mathf.Min(point.x, mousePos.x);
-        int xMax = Mathf.Max(point.x, mousePos.x);
+        if (_boxFillPositions.Count == 1)
+        {
+            Vector3Int point = _boxFillPositions[0];
 
-        int zMin = Mathf.Min(point.z, mousePos.z);
-        int zMax = Mathf.Max(point.z, mousePos.z);
+            int xMin = Mathf.Min(point.x, mousePos.x);
+            int xMax = Mathf.Max(point.x, mousePos.x);
 
-        float xSize = xMax - xMin + 1; // +1 if you want inclusive bounds
-        float zSize = zMax - zMin + 1;
+            int zMin = Mathf.Min(point.z, mousePos.z);
+            int zMax = Mathf.Max(point.z, mousePos.z);
 
-        float xCenter = (xMax + xMin) / 2f;
-        float zCenter = (zMax + zMin) / 2f;
+            float xSize = xMax - xMin + 1; // +1 if you want inclusive bounds
+            float zSize = zMax - zMin + 1;
 
-        Vector3 center = new Vector3(
-            xCenter * TilemapContext.tileSize.x,
-            TilemapContext.yValue,
-            zCenter * TilemapContext.tileSize.x);
+            float xCenter = (xMax + xMin) / 2f;
+            float zCenter = (zMax + zMin) / 2f;
 
-        Vector3 size = new Vector3(
-            xSize * TilemapContext.tileSize.x,
-            0f, // small height for 2D visual
-            zSize * TilemapContext.tileSize.x);
+            Vector3 center = new Vector3(
+                xCenter * TilemapContext.tileSize.x,
+                TilemapContext.yValue,
+                zCenter * TilemapContext.tileSize.x);
 
-        Handles.color = Color.red;
-        Handles.DrawWireCube(center, size);
+            Vector3 size = new Vector3(
+                xSize * TilemapContext.tileSize.x,
+                0f, // small height for 2D visual
+                zSize * TilemapContext.tileSize.x);
+
+            Handles.color = Color.red;
+            Handles.DrawWireCube(center, size);
+        }
+        else if (_boxFillPositions.Count == 2)
+        {
+            Vector3Int p1 = _boxFillPositions[0];
+            Vector3Int p2 = _boxFillPositions[1];
+
+            int xMin = Mathf.Min(p1.x, p2.x);
+            int xMax = Mathf.Max(p1.x, p2.x);
+
+            int yMin = Mathf.Min(p1.y, mousePos.y);
+            int yMax = Mathf.Max(p1.y, mousePos.y);
+
+            int zMin = Mathf.Min(p1.z, p2.z);
+            int zMax = Mathf.Max(p1.z, p2.z);
+
+            float xSize = xMax - xMin + 1;
+            float ySize = yMax - yMin + 1;
+            float zSize = zMax - zMin + 1;
+
+            float xCenter = (xMax + xMin) / 2f;
+            float yCenter = (yMax + yMin) / 2f;
+            float zCenter = (zMax + zMin) / 2f;
+
+            Vector3 center = new Vector3(
+                xCenter * TilemapContext.tileSize.x,
+                yCenter,
+                zCenter * TilemapContext.tileSize.x);
+
+            Vector3 size = new Vector3(
+                xSize * TilemapContext.tileSize.x,
+                ySize,
+                zSize * TilemapContext.tileSize.x);
+
+            Handles.color = Color.red;
+            Handles.DrawWireCube(center, size);
+        }
     }
-    else if (_boxFillPositions.Count == 2)
-    {
-        Vector3Int p1 = _boxFillPositions[0];
-        Vector3Int p2 = _boxFillPositions[1];
-
-        int xMin = Mathf.Min(p1.x, p2.x);
-        int xMax = Mathf.Max(p1.x, p2.x);
-
-        int yMin = Mathf.Min(p1.y, mousePos.y);
-        int yMax = Mathf.Max(p1.y, mousePos.y);
-
-        int zMin = Mathf.Min(p1.z, p2.z);
-        int zMax = Mathf.Max(p1.z, p2.z);
-
-        float xSize = xMax - xMin + 1;
-        float ySize = yMax - yMin + 1;
-        float zSize = zMax - zMin + 1;
-
-        float xCenter = (xMax + xMin) / 2f;
-        float yCenter = (yMax + yMin) / 2f;
-        float zCenter = (zMax + zMin) / 2f;
-
-        Vector3 center = new Vector3(
-            xCenter * TilemapContext.tileSize.x,
-            yCenter,
-            zCenter * TilemapContext.tileSize.x);
-
-        Vector3 size = new Vector3(
-            xSize * TilemapContext.tileSize.x,
-            ySize,
-            zSize * TilemapContext.tileSize.x);
-
-        Handles.color = Color.red;
-        Handles.DrawWireCube(center, size);
-    }
-}
-
     
     private void DrawGrid(Vector3Int gridPosition)
     {
@@ -163,4 +164,13 @@ public class GridDrawer : MonoBehaviour
     }
 
     public void ClearGridPositions() => _boxFillPositions.Clear();
+
+    void CheckForExcessLayers()
+    {
+        foreach (Transform child in transform)
+        {
+            if (!LayerManager.Layers.ContainsValue(child))
+                DestroyImmediate(child.gameObject);
+        }
+    }
 }

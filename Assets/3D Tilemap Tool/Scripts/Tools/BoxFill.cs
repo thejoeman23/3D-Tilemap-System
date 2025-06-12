@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class BoxFill : MonoBehaviour, ITool
 {
     private int _clickCounter = 0;
-    private readonly List<Vector3Int> _points = new();
+    private readonly List<Vector3Int> _points = new List<Vector3Int>();
 
     public void OnSelected()
     {
@@ -47,8 +47,6 @@ public class BoxFill : MonoBehaviour, ITool
         if (_points.Count < 3 || TilemapContext.currentSelectedTile == null)
             return;
 
-        TileEntry entry = TilemapContext.currentSelectedTile;
-
         Vector3Int p1 = _points[0];
         Vector3Int p2 = _points[1];
         Vector3Int p3 = _points[2];
@@ -74,10 +72,11 @@ public class BoxFill : MonoBehaviour, ITool
                     if (TilemapContext.placedTiles.ContainsKey(pos))
                         continue; // skip already placed tiles
 
-                    string key = TilemapContext.keys[TilemapContext.currentLayerIndex];
+                    string key = LayerManager.CurrentLayer;
                     
+                    TileEntry entry = TilemapContext.currentSelectedTile;
                     GameObject instance = Instantiate(entry.prefab, pos, Quaternion.identity);
-                    instance.transform.SetParent(TilemapContext.layers[key]);
+                    instance.transform.SetParent(LayerManager.Layers[key]);
                     
                     Tile tile = new(instance, entry.type, entry.label);
                     TilemapContext.placedTiles.Add(pos, tile);
