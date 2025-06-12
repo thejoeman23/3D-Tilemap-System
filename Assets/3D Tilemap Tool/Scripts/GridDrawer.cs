@@ -8,15 +8,35 @@ public class GridDrawer : MonoBehaviour
     // Makes sure all scripts can access this if needed
     public static GridDrawer Instance { get; private set; }
 
-    private List<Vector3Int> _boxFillPositions = new List<Vector3Int>();
+    readonly List<Vector3Int> _boxFillPositions = new List<Vector3Int>();
     
+    private static Mesh cubeMesh;
+    private static Material previewMaterial;
+
     void OnEnable()
     {
         Instance = this;
         SceneView.duringSceneGui += OnSceneGUI;
-        
+
+        // Load Unity's built-in cube mesh
+        if (cubeMesh == null)
+        {
+            GameObject tempCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cubeMesh = tempCube.GetComponent<MeshFilter>().sharedMesh;
+            DestroyImmediate(tempCube);
+        }
+
+        // Use basic built-in transparent material
+        if (previewMaterial == null)
+        {
+            Shader shader = Shader.Find("Unlit/Color");
+            previewMaterial = new Material(shader);
+            previewMaterial.hideFlags = HideFlags.HideAndDontSave;
+        }
+
         _boxFillPositions.Clear();
     }
+
 
     void OnDisable()
     {
@@ -34,8 +54,19 @@ public class GridDrawer : MonoBehaviour
             return;
 
         Debug.Log(_boxFillPositions.Count);
+
+        Vector3Int mousePos = TilemapContext.mouseHoverPos;
         
-        DrawGrid(TilemapContext.mouseHoverPos);
+        DrawGrid(mousePos, TilemapContext.yValue, Color.cyan, Color.red);
+
+        if (TilemapContext.yValue != 0)
+        {
+            DrawGrid(TilemapContext.mouseHoverPos, 0, Color.gray, Color.gray);
+            
+            Handles.color = TilemapContext.yValue > 0 ? Color.cyan : Color.red;
+            Handles.DrawLine(new Vector3(mousePos.x, TilemapContext.yValue, mousePos.z), new Vector3(mousePos.x, 0, mousePos.z));
+        }
+
         if (_boxFillPositions.Count != 0)
             DrawBoxFillVisuals();
 
@@ -112,7 +143,7 @@ public class GridDrawer : MonoBehaviour
         }
     }
     
-    private void DrawGrid(Vector3Int gridPosition)
+    private void DrawGrid(Vector3Int gridPosition, int height, Color normalColor, Color middleColor)
     {
         // Pulls variables from TilemapContext
         int gridxSize = TilemapContext.gridSize.x;
@@ -134,8 +165,8 @@ public class GridDrawer : MonoBehaviour
                 float alpha = Mathf.Clamp01(.5f - (xz / r));
 
                 Color color = IsMiddle(x, z, gridPosition) ? 
-                    Color.red : // If its the middle of the grid (where the object will be placed) color it red for user clarity
-                    Color.cyan; // else color it normal
+                    middleColor : // If its the middle of the grid (where the object will be placed) color it red for user clarity
+                    normalColor; // else color it normal
                 
                 color.a = alpha;
 
@@ -143,7 +174,7 @@ public class GridDrawer : MonoBehaviour
                 #endregion
                 
                 // Calculates position of square then draws it
-                Vector3 pos = new Vector3(x * TilemapContext.tileSize.x, TilemapContext.yValue, z * TilemapContext.tileSize.x);
+                Vector3 pos = new Vector3(x * TilemapContext.tileSize.x, height, z * TilemapContext.tileSize.x);
                 Handles.DrawWireCube(pos, new Vector3(TilemapContext.tileSize.x, 0, TilemapContext.tileSize.x));
             }
         }
