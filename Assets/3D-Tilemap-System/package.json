@@ -1,0 +1,12 @@
+{
+  "name": "com.thejoeman23.tilemap3d",
+  "version": "0.1.0",
+  "displayName": "3D Tilemap Tool",
+  "description": "A custom Unity editor tool for 3D tile-based level design.",
+  "unity": "2022.3",
+  "author": {
+    "name": "Jonathan Strong",
+    "url": "https://github.com/thejoeman23"
+  },
+  "_fingerprint": "067bbd6f6eff34ba56360ce52c6ea5b9800923a6"
+}
