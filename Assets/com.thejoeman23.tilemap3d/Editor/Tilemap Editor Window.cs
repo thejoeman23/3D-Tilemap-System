@@ -101,7 +101,7 @@ public class TilemapEditorWindow : EditorWindow
         EditorGUIUtility.labelWidth = 90; // or any smaller number
         
         if (LayerManager.Layers.Count == 0)
-            EditorGUILayout.HelpBox("No Layers Available", MessageType.Info);
+            LayerManager.AddLayer("Default Layer");
         else
         {
             LayerManager.SetCurrentLayerIndex(
