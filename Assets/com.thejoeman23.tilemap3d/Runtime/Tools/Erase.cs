@@ -16,8 +16,11 @@ public class Erase : MonoBehaviour, ITool
         if (!TilemapContext.placedTiles.TryGetValue(position, out Tile tile))
             return;
         
-        if (!IsInLayer(tile))
+        if (LayerManager.CurrentLayer == null)
+        { 
+            Debug.LogWarning("No Layer Selected");
             return;
+        }
         
         // Remove tile from dictionary and destroy the object from sceneview
         TilemapContext.placedTiles.Remove(position);

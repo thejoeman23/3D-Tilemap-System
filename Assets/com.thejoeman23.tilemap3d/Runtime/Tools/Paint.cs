@@ -16,6 +16,12 @@ public class Paint : MonoBehaviour, ITool
         if (TilemapContext.placedTiles.ContainsKey(position) || TilemapContext.currentSelectedTile == null)
             return;
         
+        if (LayerManager.CurrentLayer == null)
+        { 
+            Debug.LogWarning("No Layer Selected");
+            return;
+        }
+        
         // Pull current selected tile and instantiates it into the scene
 
         string key = LayerManager.CurrentLayer;

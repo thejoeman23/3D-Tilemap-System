@@ -6,9 +6,9 @@ public class TilemapEditorWindow : EditorWindow
 {
     // Setting varibales visible in editor window
     [SerializeField] TilePalette tilePalette;
-    [SerializeField] private Color normalColor;
-    [SerializeField] Color hoverColor;
-    [SerializeField] Color selectedColor;
+    [SerializeField] private Color normalColor = new Color(0.38f, 0.38f, 0.38f, 255);
+    [SerializeField] private Color hoverColor = new Color(0.07f, 0.66f, 0.94f, 255);
+    [SerializeField] Color selectedColor = new Color(0.58f, 0.58f, 0.58f, 255);
     
     // Private varibales
     GUIStyle backgroundStyle;

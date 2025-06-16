@@ -9,13 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebe7dee93b9eeb548abaa521762680e5, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b9671ca113647c44821cbcd91d300e9, type: 3}
   m_Name: TestPalette
   m_EditorClassIdentifier: 
   tiles:
-  - label: Shpere 1
-    prefab: {fileID: 9105661252049634828, guid: 1c99bdbc99e1b374eb581cb6d2ba4427, type: 3}
-    type: 4
   - label: Cube
     prefab: {fileID: 8579270086068883846, guid: c72a9b41ab7fa2744acfa85c23c8b8e1, type: 3}
-    type: 4
+    type: 0
