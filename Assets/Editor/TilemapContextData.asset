@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a2c4283e4626034f82eff055112fe95, type: 3}
+  m_Name: TilemapContextData
+  m_EditorClassIdentifier: 
+  tileSize: {x: 1, y: 1, z: 1}
+  gridSize: {x: 0, y: 0}
+  yValue: 3
+  mouseHoverPos: {x: 0, y: 3, z: 37}
+  currentSelectedTile:
+    label: 
+    prefab: {fileID: 0}
+    type: 0
+  placedTilesKeys: []
+  placedTilesValues: []

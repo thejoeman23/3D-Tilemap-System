@@ -24,6 +24,7 @@ public class Erase : MonoBehaviour, ITool
         
         // Remove tile from dictionary and destroy the object from sceneview
         TilemapContext.placedTiles.Remove(position);
+        TilemapContext.UploadPlacedTiles();
         DestroyImmediate(tile.prefabInstance);
     }
 

@@ -18,12 +18,46 @@ public static class LayerManager
 
     public static void AddLayer(string layerName)
     {
+        if (GridDrawer.Instance == null)
+            return;
+        
         string verifiedOriginalName = VerifiedLayerName(layerName);
 
         GameObject newLayer = new GameObject(verifiedOriginalName);
         _layers.Add(verifiedOriginalName, newLayer.transform);
-        newLayer.transform.SetParent(TilemapContext.tilemap.transform);
+        newLayer.transform.SetParent(GridDrawer.Instance.transform);
         _currentLayer = verifiedOriginalName;
+    }
+    
+    public static void AddLayerByTransform(Transform layerTransform)
+    {
+        _layers.Add(layerTransform.gameObject.name, layerTransform);
+    }
+
+    public static void RemoveCurrentLayer()
+    {
+        if (GridDrawer.Instance == null)
+            return;
+       
+        int currentIndex = GetCurrentLayerIndex();
+        if (currentIndex > 0)
+        {
+            GridDrawer.Instance.DestroyLayerTransform(Layers.TryGetValue(CurrentLayer, out Transform layerTransform) ? layerTransform : null);
+            Layers.Remove(CurrentLayer);
+            SetCurrentLayerIndex(currentIndex - 1);
+        }
+        else if (currentIndex == 0 && LayerManager.Layers.Count > 0)
+        {
+            GridDrawer.Instance.DestroyLayerTransform(Layers.TryGetValue(CurrentLayer, out Transform layerTransform) ? layerTransform : null);
+            Layers.Remove(CurrentLayer);
+            SetCurrentLayerIndex(currentIndex);
+        }
+        else
+        {
+            GridDrawer.Instance.DestroyLayerTransform(Layers.TryGetValue(CurrentLayer, out Transform layerTransform) ? layerTransform : null);
+            Layers.Remove(CurrentLayer);
+            CurrentLayer = null;
+        }
     }
 
     public static string CurrentLayer

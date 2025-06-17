@@ -7,8 +7,8 @@ public class TilemapEditorWindow : EditorWindow
     // Setting varibales visible in editor window
     [SerializeField] TilePalette tilePalette;
     [SerializeField] private Color normalColor = new Color(0.38f, 0.38f, 0.38f, 255);
-    [SerializeField] private Color hoverColor = new Color(0.07f, 0.66f, 0.94f, 255);
-    [SerializeField] Color selectedColor = new Color(0.58f, 0.58f, 0.58f, 255);
+    [SerializeField] private Color selectedColor = new Color(0.07f, 0.66f, 0.94f, 255);
+    [SerializeField] Color hoverColor = new Color(0.58f, 0.57f, 0.58f, 255);
     
     // Private varibales
     GUIStyle backgroundStyle;
@@ -27,19 +27,14 @@ public class TilemapEditorWindow : EditorWindow
     void OnGUI() // The Update() of editor windwos
     {
         SetupStyles();
-        
-        // Search for existing grid
-        GridDrawer existingGrid = GridDrawer.Instance;
-        if (existingGrid != null) TilemapContext.tilemap = existingGrid;
-        
+
         // If no grid exists add option to create a grid
-        if (TilemapContext.tilemap == null)
+        if (GridDrawer.Instance == null)
         {
             if (GUILayout.Button("Create Grid"))
             {
                 GameObject grid = new GameObject("Grid3D");
                 grid.AddComponent<GridDrawer>();
-                TilemapContext.tilemap = grid.GetComponent<GridDrawer>();
             }
         }
 
@@ -115,22 +110,7 @@ public class TilemapEditorWindow : EditorWindow
             
             if (GUILayout.Button("\u274C", GUILayout.Width(30)))
             {
-                int currentIndex = LayerManager.GetCurrentLayerIndex();
-                if (currentIndex > 0)
-                {
-                    LayerManager.Layers.Remove(LayerManager.CurrentLayer);
-                    LayerManager.SetCurrentLayerIndex(currentIndex - 1);
-                }
-                else if (currentIndex == 0 && LayerManager.Layers.Count > 0)
-                {
-                    LayerManager.Layers.Remove(LayerManager.CurrentLayer);
-                    LayerManager.SetCurrentLayerIndex(currentIndex);
-                }
-                else
-                {
-                    LayerManager.Layers.Remove(LayerManager.CurrentLayer);
-                    LayerManager.CurrentLayer = null;
-                }
+                LayerManager.RemoveCurrentLayer();
             }  
         }
 

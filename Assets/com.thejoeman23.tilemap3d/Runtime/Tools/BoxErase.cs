@@ -90,6 +90,8 @@ public class BoxErase : MonoBehaviour, ITool
                 }
             }
         }
+        
+        TilemapContext.UploadPlacedTiles();
     }
 
     bool IsInLayer(Tile tile)

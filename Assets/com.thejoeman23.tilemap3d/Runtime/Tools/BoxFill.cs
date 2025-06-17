@@ -89,5 +89,7 @@ public class BoxFill : MonoBehaviour, ITool
                 }
             }
         }
+        
+        TilemapContext.UploadPlacedTiles();
     }
 }

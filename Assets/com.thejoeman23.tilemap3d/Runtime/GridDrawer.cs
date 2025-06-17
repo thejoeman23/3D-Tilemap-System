@@ -196,12 +196,14 @@ public class GridDrawer : MonoBehaviour
 
     public void ClearGridPositions() => _boxFillPositions.Clear();
 
+    public void DestroyLayerTransform(Transform layerTransform) => DestroyImmediate(layerTransform.gameObject);
+    
     void CheckForExcessLayers()
     {
         foreach (Transform child in transform)
         {
             if (!LayerManager.Layers.ContainsValue(child))
-                DestroyImmediate(child.gameObject);
+                LayerManager.AddLayerByTransform(child);
         }
     }
 }
