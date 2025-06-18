@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class BoxFill : MonoBehaviour, ITool
 {
+    // NOTE: BoxErase.cs is commented out alreadu and the code here is almost identical but adds tiles instead of destroys. Go read that first :)
+    
     private int _clickCounter = 0;
     private readonly List<Vector3Int> _points = new List<Vector3Int>();
 
@@ -89,5 +91,7 @@ public class BoxFill : MonoBehaviour, ITool
                 }
             }
         }
+        
+        TilemapContext.UploadPlacedTiles();
     }
 }

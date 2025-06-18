@@ -35,6 +35,7 @@ public class Paint : MonoBehaviour, ITool
         
         // Adds the new tile to dictionary of placed tiles
         TilemapContext.placedTiles.Add(position, tile);
+        TilemapContext.UploadPlacedTiles();
     }
 
     public void OnDeselected()

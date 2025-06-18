@@ -6,7 +6,7 @@ using UnityEditorInternal;
 [CustomEditor(typeof(TilePalette))]
 public class TilePaletteEditor : Editor
 {
-    // NOTE: This isnt really needed I just felt like making it so i wont comment
+    // this was like the first thing i made so i dont really remember much about it
     
     private SerializedProperty tilesProp;
 
@@ -37,6 +37,7 @@ public class TilePaletteEditor : Editor
         // Draw lists side by side
         for (int i = 0; i < size; i++)
         {
+            // Pulling variables from tile
             SerializedProperty tilePrefabEntry = tilesList.serializedProperty.GetArrayElementAtIndex(i);
             SerializedProperty tileLabel = tilePrefabEntry.FindPropertyRelative("label");
             SerializedProperty tilePrefab = tilePrefabEntry.FindPropertyRelative("prefab");
@@ -74,6 +75,7 @@ public class TilePaletteEditor : Editor
             Color oldColor = GUI.backgroundColor;
             GUI.backgroundColor = new Color(1f, 0.25f, 0.15f); // vivid red
             
+            // Removes the tile
             if (GUILayout.Button("Remove Tile"))
             {
                 tilesProp.DeleteArrayElementAtIndex(i);
@@ -88,6 +90,7 @@ public class TilePaletteEditor : Editor
             EditorGUILayout.Space();
         }
 
+        // Adds a new tile
         if (GUILayout.Button("+"))
         {
             tilesProp.InsertArrayElementAtIndex(tilesProp.arraySize);

@@ -22,14 +22,20 @@ public class Erase : MonoBehaviour, ITool
             return;
         }
         
+        if (!IsInLayer(tile))
+            return;
+        
         // Remove tile from dictionary and destroy the object from sceneview
         TilemapContext.placedTiles.Remove(position);
+        TilemapContext.UploadPlacedTiles();
         DestroyImmediate(tile.prefabInstance);
     }
 
-    bool IsInLayer(Tile tile)
+    bool IsInLayer(Tile tile) // checks if tile is in the current layer
     {
-        return LayerManager.Layers.ContainsValue(tile.prefabInstance.transform.parent);
+        LayerManager.Layers.TryGetValue(LayerManager.CurrentLayer, out Transform layer);
+        
+        return tile.prefabInstance.transform.parent == layer;
     }
     
     public void OnDeselected()
