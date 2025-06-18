@@ -4,7 +4,6 @@ using UnityEngine;
 public static class TilemapIcons
 {
     // A static class of all tilemap icons any script can call on
-    
     private static Texture2D PaintbrushIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/com.thejoeman23.tilemap3d/Icons/Paintbrush.png");
     private static Texture2D EraserIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/com.thejoeman23.tilemap3d/Icons/Eraser.png");
     private static Texture2D BoxFillIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/com.thejoeman23.tilemap3d/Icons/BoxPaint.png");

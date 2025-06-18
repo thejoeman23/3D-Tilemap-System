@@ -73,12 +73,14 @@ public class GridDrawer : MonoBehaviour
         HandleUtility.Repaint(); // Force SceneView to redraw
     }
 
-    private void DrawBoxFillVisuals()
+    private void DrawBoxFillVisuals() // Kinda ugly, i'd just not look at this lol
     {
         Vector3Int mousePos = TilemapContext.mouseHoverPos;
 
         if (_boxFillPositions.Count == 1)
         {
+            // If its the first click draw a box from first click to current mouse pos
+            
             Vector3Int point = _boxFillPositions[0];
 
             int xMin = Mathf.Min(point.x, mousePos.x);
@@ -108,6 +110,8 @@ public class GridDrawer : MonoBehaviour
         }
         else if (_boxFillPositions.Count == 2)
         {
+            // if its the second click, draw a square from point 1 to 2 and adjust the height to the current cursor height
+            
             Vector3Int p1 = _boxFillPositions[0];
             Vector3Int p2 = _boxFillPositions[1];
 
@@ -141,6 +145,7 @@ public class GridDrawer : MonoBehaviour
             Handles.color = Color.red;
             Handles.DrawWireCube(center, size);
         }
+        // Nothing gets drawn on 3rd click
     }
     
     private void DrawGrid(Vector3Int gridPosition, int height, Color normalColor, Color middleColor)
@@ -196,9 +201,10 @@ public class GridDrawer : MonoBehaviour
 
     public void ClearGridPositions() => _boxFillPositions.Clear();
 
-    public void DestroyLayerTransform(Transform layerTransform) => DestroyImmediate(layerTransform.gameObject);
+    // It shouldnt really be here but this was a quick workaround for LayerManager.cs not having monobehaviour. Remotely destroys layers for layermanager
+    public void DestroyLayerTransform(Transform layerTransform) => DestroyImmediate(layerTransform.gameObject); 
     
-    void CheckForExcessLayers()
+    void CheckForExcessLayers() // If there are already layers in the grid object add them to the layers list
     {
         foreach (Transform child in transform)
         {

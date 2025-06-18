@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 
 public class BoxErase : MonoBehaviour, ITool
 {
@@ -14,26 +15,29 @@ public class BoxErase : MonoBehaviour, ITool
 
     public void OnClick()
     {
+        // If there is no layer return
         if (LayerManager.CurrentLayer == null)
         { 
             Debug.LogWarning("No Layer Selected");
             return;
         }
         
+        // This here counts the number of clicks. (the first click is click 0)
+        
         Vector3Int position = TilemapContext.mouseHoverPos;
 
-        if (_clickCounter == 2)
+        if (_clickCounter == 2) // If the player has clicked 3 times clear the visuals since its gonna erase the tiles there now
             GridDrawer.Instance.ClearGridPositions();
 
         _points.Add(position);
         _clickCounter++;
 
-        if (_clickCounter < 3)
+        if (_clickCounter < 3) // If 3 clicks havent occured update the visuals
         {
             GridDrawer.Instance.AddGridPosition(position);
         }
 
-        if (_clickCounter == 3)
+        if (_clickCounter == 3) // If its the 3rd click clear the tiles
         {
             ClearTiles();
             _clickCounter = 0;
@@ -48,8 +52,9 @@ public class BoxErase : MonoBehaviour, ITool
         _points.Clear();
     }
 
-    private void ClearTiles()
+    private void ClearTiles() // Clears all the tiles within the specified boundaries
     {
+        // Catch
         if (_points.Count < 3 || TilemapContext.currentSelectedTile == null)
             return;
 
@@ -69,6 +74,7 @@ public class BoxErase : MonoBehaviour, ITool
         int yMin = Mathf.Min(p1.y, p3.y);
         int yMax = Mathf.Max(p1.y, p3.y);
 
+        // Begin to loop through all xyz and search for objects to clear
         for (int x = xMin; x <= xMax; x++)
         {
             for (int z = zMin; z <= zMax; z++)
@@ -94,8 +100,10 @@ public class BoxErase : MonoBehaviour, ITool
         TilemapContext.UploadPlacedTiles();
     }
 
-    bool IsInLayer(Tile tile)
+    bool IsInLayer(Tile tile) // checks if tile is in the current layer
     {
-        return LayerManager.Layers.ContainsValue(tile.prefabInstance.transform.parent);
+        LayerManager.Layers.TryGetValue(LayerManager.CurrentLayer, out Transform layer);
+        
+        return tile.prefabInstance.transform.parent == layer;
     }
 }

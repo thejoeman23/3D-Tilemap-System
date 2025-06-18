@@ -8,7 +8,11 @@ using System.IO;
 [InitializeOnLoad]
 public static class TilemapContext
 {
-    private static TilemapContextSaveData _data;
+    // This one is quite confusing. The gist of what is does is:
+    // Update and pull variables from a ScriptableObject. These variables all scripts need to access and update. Its like a global mailbox all scripts can see.
+    // Anyways it would reset every time the scripts recompiled so i back them up into my TilemapContextSaveData object :)
+    
+    private static TilemapContextSaveData _data; // The scriptable object containing all save data
     private static Dictionary<Vector3Int, Tile> _placedTiles = new();
 
     private static double _lastSaveTime;
@@ -20,11 +24,12 @@ public static class TilemapContext
 #endif
     }
 
-    private static void LoadData()
+    private static void LoadData() // Updates _data
     {
 #if UNITY_EDITOR
         if (_data != null) return;
 
+        
         string[] guids = AssetDatabase.FindAssets("TilemapContext t:Script");
         if (guids.Length == 0)
         {
@@ -38,24 +43,26 @@ public static class TilemapContext
             Debug.LogError("Invalid script path found!");
             return;
         }
-
+        
         string scriptDirectory = Path.GetDirectoryName(scriptPath);
         string assetPath = Path.Combine(scriptDirectory, "TilemapContextData.asset").Replace("\\", "/");
 
         _data = AssetDatabase.LoadAssetAtPath<TilemapContextSaveData>(assetPath);
-        if (_data == null)
+        if (_data == null) // If the save data is lost create new data
         {
             _data = ScriptableObject.CreateInstance<TilemapContextSaveData>();
             AssetDatabase.CreateAsset(_data, assetPath);
             Debug.Log("Created new TilemapContextData at: " + assetPath);
         }
 
-        LoadPlacedTiles();
+        LoadPlacedTiles(); // Loads all placed tiles into _placedTiles from _data
 #endif
     }
 
+    // Loads all placed tiles into _placedTiles from _data
     private static void LoadPlacedTiles()
     {
+        // Takes the two lists of keys and values and stitches them together
         _placedTiles.Clear();
         for (int i = 0; i < _data.placedTilesValues.Count; i++)
         {
@@ -63,8 +70,10 @@ public static class TilemapContext
         }
     }
 
-    public static void UploadPlacedTiles()
+    public static void UploadPlacedTiles() // Uploads all placed tiles to _data
     {
+        // Splits up dictionary _placedTiles into two lists and stores them in the savedata
+        
         _data.placedTilesKeys.Clear();
         _data.placedTilesValues.Clear();
 
@@ -80,7 +89,7 @@ public static class TilemapContext
 #endif
     }
 
-    private static void MarkDirty()
+    private static void MarkDirty() // Let unity know it needs to be updated
     {
 #if UNITY_EDITOR
         if (_data == null) return;
@@ -167,14 +176,16 @@ public static class TilemapContext
         }
     }
 
+    // A list of placed tiles
     public static Dictionary<Vector3Int, Tile> placedTiles
     {
         get => _placedTiles;
     }
 
-    // Runtime only
+    // Runtime only. Current selected tool
     public static ITool selectedTool;
 
+    // A list of implemented tools. Used by the window script to generate the buttons
     public static List<ITool> tools = new()
     {
         new Paint(),

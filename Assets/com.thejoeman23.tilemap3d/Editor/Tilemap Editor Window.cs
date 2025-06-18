@@ -11,12 +11,12 @@ public class TilemapEditorWindow : EditorWindow
     [SerializeField] Color hoverColor = new Color(0.58f, 0.57f, 0.58f, 255);
     
     // Private varibales
-    GUIStyle backgroundStyle;
+    GUIStyle _backgroundStyle;
     
-    GUIStyle selectedStyle;
-    GUIStyle buttonStyle;
+    GUIStyle _selectedStyle;
+    GUIStyle _buttonStyle;
     
-    Vector2 scrollPosition;
+    Vector2 _scrollPosition;
 
     string _newLayerName = "New Layer Name";
 
@@ -38,8 +38,9 @@ public class TilemapEditorWindow : EditorWindow
             }
         }
 
-        EditorGUILayout.BeginVertical(backgroundStyle);
+        EditorGUILayout.BeginVertical(_backgroundStyle);
         
+        // Self explanitory
         DrawLayerSelection();
         
         // Draw input for tilepalette
@@ -86,19 +87,23 @@ public class TilemapEditorWindow : EditorWindow
         
         Repaint();
     }
-
+    
     bool _isNamingLayer = false;
     
-    void DrawLayerSelection()
+    void DrawLayerSelection() // Draws layer selecton interface
     {
         EditorGUILayout.BeginHorizontal();
         
         EditorGUIUtility.labelWidth = 90; // or any smaller number
-        
-        if (LayerManager.Layers.Count == 0)
+
+        if (LayerManager.Layers.Count == 0) // If there are no layers add a default layer
             LayerManager.AddLayer("Default Layer");
         else
         {
+            if (LayerManager.Layers.Count == 1) // Prevents layer from being null
+                LayerManager.SetCurrentLayerIndex(0);
+            
+            // Draws LayerSelectopn Popup
             LayerManager.SetCurrentLayerIndex(
                 EditorGUILayout.Popup
                 (
@@ -107,32 +112,37 @@ public class TilemapEditorWindow : EditorWindow
                     LayerManager.GetLayerNames().ToArray()
                 )
             );
-            
+
+            // Button that removes the current layer
             if (GUILayout.Button("\u274C", GUILayout.Width(30)))
             {
                 LayerManager.RemoveCurrentLayer();
-            }  
+            }
         }
 
         if (!_isNamingLayer)
         {
+            // If the user isnt naming a new layer give the option to add a new layer
             if (GUILayout.Button("Add Layer", GUILayout.Width(80)))
             {
                 _isNamingLayer = true;
             }   
         }
-        else
+        else // If user is naming a new layer
         {
+            // sets _newLayerName to the contents of the text input field being drawn below
             _newLayerName = EditorGUILayout.TextField("", _newLayerName);
 
+            // The confirm button. Confirm name and then it creates the new layer and goes back to normal
             if (GUILayout.Button("\u2713", GUILayout.Width(30)))
             {
                 LayerManager.AddLayer(_newLayerName);
 
                 _isNamingLayer = false;
-                _newLayerName = "New Layer Name";
+                _newLayerName = "New Layer Name"; // Dont really remember why this is used ever
             }
 
+            // Cancel button. returns to normal and doesnt add new name
             if (GUILayout.Button("\u274C", GUILayout.Width(30)))
             {
                 _isNamingLayer = false;
@@ -144,7 +154,7 @@ public class TilemapEditorWindow : EditorWindow
 
     void DrawToolButtons() // Draws buttons for tools
     {
-        EditorGUILayout.BeginHorizontal(backgroundStyle);
+        EditorGUILayout.BeginHorizontal(_backgroundStyle);
 
         // Loop through each tool and draw the button for said tool
         foreach (ITool tool in TilemapContext.tools)
@@ -161,8 +171,8 @@ public class TilemapEditorWindow : EditorWindow
         if (icon == null) return; // Catch
 
         GUIStyle style = (TilemapContext.selectedTool == tool) ? 
-            selectedStyle :  // If tool is selected show selected style
-            buttonStyle;     // If tool isnt then dont
+            _selectedStyle :  // If tool is selected show selected style
+            _buttonStyle;     // If tool isnt then dont
 
         // NOTE: GUILayout.Button acts as a bool and a function. It creates the button then if its pressed (true or false) it runs the if statement
         if (GUILayout.Button(icon, style, GUILayout.Width(50), GUILayout.Height(50)))
@@ -184,10 +194,10 @@ public class TilemapEditorWindow : EditorWindow
 
         int col = 0;
 
-        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition); // Start scroll view
+        _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition); // Start scroll view
 
         EditorGUILayout.BeginVertical();
-        EditorGUILayout.BeginHorizontal(backgroundStyle);
+        EditorGUILayout.BeginHorizontal(_backgroundStyle);
 
         for (int i = 0; i < tilePalette.tiles.Count; i++)
         {
@@ -195,7 +205,7 @@ public class TilemapEditorWindow : EditorWindow
             
             // Draw button
             bool isSelected = TilemapContext.currentSelectedTile == entry; // Checks is this tile is currently the selected tile 
-            GUIStyle style = isSelected ? selectedStyle : buttonStyle; // If its selected use the selected style if not use the normal style
+            GUIStyle style = isSelected ? _selectedStyle : _buttonStyle; // If its selected use the selected style if not use the normal style
             
             // Get preview
             Texture2D preview = AssetPreview.GetAssetPreview(entry.prefab); // Gets visual preview of the prefab to display later
@@ -219,7 +229,7 @@ public class TilemapEditorWindow : EditorWindow
             if (col >= tilesPerRow)
             {
                 EditorGUILayout.EndHorizontal();
-                EditorGUILayout.BeginHorizontal(backgroundStyle);
+                EditorGUILayout.BeginHorizontal(_backgroundStyle);
                 col = 0;
             }
         }
@@ -232,17 +242,17 @@ public class TilemapEditorWindow : EditorWindow
 
     private void SetupStyles() // Sets up variables for button styles and so on
     {
-        buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.normal.background = SetTexture(normalColor);
-        buttonStyle.hover.background = SetTexture(hoverColor);
+        _buttonStyle = new GUIStyle(GUI.skin.button);
+        _buttonStyle.normal.background = SetTexture(normalColor);
+        _buttonStyle.hover.background = SetTexture(hoverColor);
         
-        selectedStyle = new GUIStyle(GUI.skin.button);
-        selectedStyle.normal.background = SetTexture(selectedColor);
+        _selectedStyle = new GUIStyle(GUI.skin.button);
+        _selectedStyle.normal.background = SetTexture(selectedColor);
 
         // Create a GUIStyle based on "box" but override background
-        backgroundStyle = new GUIStyle(GUI.skin.box);
-        backgroundStyle.normal.background = Texture2D.blackTexture;
-        backgroundStyle.border = new RectOffset(4, 4, 4, 4); // Optional: helps with padding visuals
+        _backgroundStyle = new GUIStyle(GUI.skin.box);
+        _backgroundStyle.normal.background = Texture2D.blackTexture;
+        _backgroundStyle.border = new RectOffset(4, 4, 4, 4); // Optional: helps with padding visuals
     }
 
     private Texture2D SetTexture(Color color) // Used to create textures with given color to use in button styles
