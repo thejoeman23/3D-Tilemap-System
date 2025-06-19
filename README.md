@@ -26,6 +26,17 @@ A Unity Editor tool for placing 3D tiles, prefabs, and trigger tiles on a custom
 
 ---
 
+## 🔧 Installation
+
+1. Clone this repo into your Unity project's `Assets/Editor/` folder:
+   git clone
+   ```bash
+   https://github.com/thejoeman23/3D-Tilemap-System.git
+   ```
+   ![Placing and Erasing Tiles](Docs/InstallPackage.gif)
+
+---
+
 ## 📸 How To Use
 
 - Using The Tile Palette Scriptable Object
@@ -45,12 +56,3 @@ A Unity Editor tool for placing 3D tiles, prefabs, and trigger tiles on a custom
 
 
 ---
-
-## 🔧 Installation
-
-1. Clone this repo into your Unity project's `Assets/Editor/` folder:
-   git clone
-   ```bash
-   https://github.com/thejoeman23/3D-Tilemap-System.git
-   ```
-   ![Placing and Erasing Tiles](Docs/InstallPackage.gif)
